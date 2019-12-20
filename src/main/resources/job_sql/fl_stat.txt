@@ -1,0 +1,8 @@
+select TUMBLE_END(ts, INTERVAL `5` MINUTE) as ts,
+supplierid as supplier,
+pid,
+ext[`fl`] as fl,
+count(impid) as count_impid 
+from bidrequest, LATERAL TABLE(explode_ex(pids)) as t(pid)
+where ext[`fl`] is not null
+group by TUMBLE(ts, INTERVAL `5` MINUTE), supplierid, pid, ext[`fl`]

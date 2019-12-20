@@ -1,0 +1,22 @@
+select TUMBLE_END(ts, INTERVAL '5' MINUTE) as ts,
+idc,
+count(impid) as count_impid, 
+avg(cast(split(ext['ct'], '_')[2] AS int)) as request_total,
+avg(cast(split(ext['ct'], '_')[3] AS int)) as request_format,
+avg(cast(split(ext['ct'], '_')[4] AS int)) as context_augmentor,
+avg(cast(split(ext['ct'], '_')[5] AS int)) as risk_request,
+avg(cast(split(ext['ct'], '_')[6] AS int)) as retrieve_normal,
+avg(cast(split(ext['ct'], '_')[7] AS int)) as retrieve_default,
+avg(cast(split(ext['ct'], '_')[8] AS int)) as estimate_ctr,
+avg(cast(split(ext['ct'], '_')[9] AS int)) as estimate_cvr,
+avg(cast(split(ext['ct'], '_')[10] AS int)) as bid_strategy,
+avg(cast(split(ext['ct'], '_')[11] AS int)) as creative_post,
+avg(cast(split(ext['ct'], '_')[12] AS int)) as risk_reponse,
+avg(cast(split(ext['ct'], '_')[13] AS int)) as log_response,
+avg(cast(split(ext['ct'], '_')[14] AS int)) as response_format,
+avg(cast(split(ext['ct'], '_')[15] AS int)) as pika_query,
+avg(cast(split(ext['ct'], '_')[16] AS int)) as frequency_post,
+avg(cast(split(ext['ct'], '_')[17] AS int)) as dynamic_post
+from bidrequest, LATERAL TABLE(group_idc(host)) as t(idc)
+where ext['ct'] is not null 
+group by TUMBLE(ts, INTERVAL '5' MINUTE), idc, RAND_INTEGER(20)
